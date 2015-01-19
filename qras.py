@@ -60,6 +60,7 @@ class Qgis2Ras:
 
         # Create the dialog (after translation) and keep reference
         self.dlg = Qgis2RasDialog(self.iface)
+        self.dlg.setup_gui()
 
         # Declare instance attributes
         self.actions = []
@@ -179,6 +180,7 @@ class Qgis2Ras:
 
     def run(self):
         """Run method that performs all the real work"""
+        self.dlg = Qgis2RasDialog(self.iface)
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop

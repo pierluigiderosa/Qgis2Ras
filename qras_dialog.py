@@ -23,22 +23,21 @@
 
 import os
 
-from PyQt4 import  uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from tools.RASout import main
+from qgis.utils import showPluginHelp
+from qras_dialog_base import Ui_Qgis2RasDialogBase
 
 
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'qras_dialog_base.ui'))
 
-
-class Qgis2RasDialog(QDialog, FORM_CLASS):
-    def __init__(self, iface,parent=None):
+class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
+    def __init__(self, iface): 
         """Constructor."""
-        super(Qgis2RasDialog, self).__init__(parent)
+        #~ super(Qgis2RasDialog, self).__init__(parent)
+        QDialog.__init__(self)
         # Set up the user interface from Designer.
         # After setupUI you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -55,11 +54,25 @@ class Qgis2RasDialog(QDialog, FORM_CLASS):
         self.XSection = None
         self.river = None
         self.dem = None
+        # noinspection PyArgumentList
+        self.plugin_builder_path = os.path.dirname(__file__)
         
         #connections
-        QObject.connect(self.execute, SIGNAL( "clicked()" ), self.runProfile)
         QObject.connect(self.browseBtn, SIGNAL( "clicked()" ), self.writeTxt)
+        self.button_box.helpRequested.connect(self.show_help)
+        self.button_box.accepted.connect(self.runProfile)
         
+    def show_help(self):
+        """Display application help to the user."""
+        help_file = 'file:///%s/help/build/html/index.html' % self.plugin_builder_path
+        # For testing path:
+        #~ QMessageBox.information(None, 'Help File', help_file)
+        # noinspection PyCallByClass,PyTypeChecker
+        QDesktopServices.openUrl(QUrl(help_file))
+
+
+    def Message(self):
+        QMessageBox.information(self.iface.mainWindow(),"press OK", 'premuto ok' )
         
     def setup_gui(self):
         """ Function to combos creation """
@@ -85,14 +98,14 @@ class Qgis2RasDialog(QDialog, FORM_CLASS):
         #~ For river
         RivIndex = self.vectorCombo.currentIndex()
         self.river = self.vectorCombo.itemData(RivIndex)
-        #~ For grraster
+        #~ For raster
         DemIndex = self.rasterCombo.currentIndex()
         self.dem = self.rasterCombo.itemData(DemIndex)
         
         self.textfile = self.lineEdit.text()
         self.textfile = str(self.textfile)
 
-        main(self.river,self.XSection,self.textfile)
+        main(self.river,self.XSection,self.textfile,self.dem)
 
     def writeTxt(self):
         fileName = QFileDialog.getSaveFileName(self, 'Save RAS file', 

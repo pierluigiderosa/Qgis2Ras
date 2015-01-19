@@ -1,0 +1,9 @@
+FORMS = ../qras_dialog_base.ui
+
+SOURCES = ../qras.py \
+../qras_dialog.py
+../tools/RASout
+
+TRANSLATIONS = i18n/Qgis2Ras_it.ts\
+i18n/Qgis2Ras_en.ts\
+

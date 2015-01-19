@@ -33,11 +33,6 @@ from os import linesep as LineSep
 
 
 
-fileName = "/home/pierluigi/Scrivania/pluginQRAS/dem_torgiano.tif"
-fileInfo = QFileInfo(fileName)
-baseName = fileInfo.baseName()
-rlayer = QgsRasterLayer(fileName, baseName)
-
 def output_headers(river, xsections, outfile):
     """
     Prepare the output sdf file, and add header section
@@ -87,6 +82,7 @@ def output_headers(river, xsections, outfile):
     outfile.write(LineSep+LineSep+LineSep)
 
 
+
 def output_centerline(river, stations, outfile,rlayer):
     """
     Output the river network, including centerline for each reach
@@ -112,10 +108,10 @@ def output_centerline(river, stations, outfile,rlayer):
         # IT SHOUD LOOP thru the reach_cats again, and output a REACH: section for each reach,
         # with all points for that reach --- TODO
         riverName =  river.name().replace(" ", "")
-        (Xs,Ys,Zs) = queryRaster(points[0],rlayer)
-        (Xe,Ye,Ze) = queryRaster(points[-1],rlayer)
-        #~ outfile.write("ENDPOINT: %.1f, %.1f, %.3f, 1\n" %(Xs,Ys,Zs) ) 
-        #~ outfile.write("ENDPOINT: %.1f, %.1f, %.3f, 2\n" %(Xe,Ye,Ze) )
+        # (Xs,Ys,Zs) = queryRaster(points[0],rlayer)
+        # (Xe,Ye,Ze) = queryRaster(points[-1],rlayer)
+        # outfile.write("ENDPOINT: %.1f, %.1f, %.3f, 1\n" %(Xs,Ys,Zs) ) 
+        # outfile.write("ENDPOINT: %.1f, %.1f, %.3f, 2\n" %(Xe,Ye,Ze) )
         outfile.write(LineSep)
         outfile.write("REACH:")
         outfile.write(LineSep)
@@ -144,8 +140,8 @@ def output_centerline(river, stations, outfile,rlayer):
 
 def queryRaster(point,raster):
     p = QgsPoint(point[0],point[1])
-    if isInExtent(rlayer,point):
-        provider=rlayer.dataProvider()		    			    
+    if isInExtent(raster,point):
+        provider=raster.dataProvider()		    			    
         identifyresult = provider.identify(p,QgsRaster.IdentifyFormatValue,QgsRectangle())
         results = identifyresult.results()
         val = results[1]
@@ -287,18 +283,14 @@ def line_endings(text_file):
         f.close()
 
 
-def main(river,xsections,file_strin_path,res=1):
-    #~ rimuovi i commenti se tutto ok
-    river = QgsVectorLayer('/home/pierluigi/Scrivania/pluginQRAS/asse_tevere_OK.shp', 'asse_tevere_OK', 'ogr')
-    #~ xsections = QgsVectorLayer('/home/pierluigi/Scrivania/pluginQRAS/XSections1.shp', 'XSections1', 'ogr')
-    #~ file_strin_path='/tmp/test.sdf'
+def main(river,xsections,file_strin_path,rlayer,res=2):
     #~ res=1
     outfile = open(file_strin_path, 'w')
     output_headers(river, xsections, outfile)
     output_centerline(river,xsections, outfile,rlayer)
     output_xsections(xsections, outfile, rlayer, res, river)
     outfile.close()
-    #~ test line endings
+    # test line endings
     f = open(file_strin_path, 'U')
     f.readline()
     if f.newlines == '\n':

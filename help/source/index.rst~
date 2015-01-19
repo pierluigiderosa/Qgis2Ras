@@ -35,7 +35,7 @@ The steps to using Q-RAS Plugin are fairly simple:
 .. index:: Limitation
 
 Limititation of current version
-==================================
+=================
 
 This version of Plugin Q-RAS is an experimental version. It's need more tests anb presents some limitation:
 - only one river can be processed
