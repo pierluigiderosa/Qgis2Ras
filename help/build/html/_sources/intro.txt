@@ -1,0 +1,16 @@
+.. introduction:
+
+Introduction
+=========================
+
+
+Q-RAS Plugin is a preprocessing for geometry preparation in HEC-RAS.
+
+The steps to using Q-RAS Plugin are fairly simple:
+
+#. Load in QGIS a Digital Elevation Model in grid format in a projected crs
+#. Digitize a stream network vector line from **upstream do downstream**
+#. Digitize a Cross sections vector line from **left overbank to righ toverbank** (it's not necessary to follow a particular order in XS digitizing as the plugin order the XS basing on the river feature)
+#. Designate where to store your new geometry file
+#. press OK
+#. Open HEC-RAS and enjoy

@@ -26,7 +26,7 @@ import os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-from tools.RASout import main
+from RASout import main
 from qgis.utils import showPluginHelp
 from qras_dialog_base import Ui_Qgis2RasDialogBase
 
@@ -64,15 +64,16 @@ class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
         
     def show_help(self):
         """Display application help to the user."""
-        help_file = 'file:///%s/help/build/html/index.html' % self.plugin_builder_path
+        help_file = 'file:///%s/help/index.html' % self.plugin_builder_path
         # For testing path:
         #~ QMessageBox.information(None, 'Help File', help_file)
         # noinspection PyCallByClass,PyTypeChecker
         QDesktopServices.openUrl(QUrl(help_file))
 
 
-    def Message(self):
-        QMessageBox.information(self.iface.mainWindow(),"press OK", 'premuto ok' )
+    def Message(self,testo):
+        str(testo)
+        QMessageBox.information(self.iface.mainWindow(),"press OK", testo)
         
     def setup_gui(self):
         """ Function to combos creation """
@@ -101,11 +102,15 @@ class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
         #~ For raster
         DemIndex = self.rasterCombo.currentIndex()
         self.dem = self.rasterCombo.itemData(DemIndex)
+        # I take the X Y resolution supposing its a square pixel
+        resX = self.dem.rasterUnitsPerPixelX()
+        resY = self.dem.rasterUnitsPerPixelY()
+        resolution = (resX**2+resY**2)**0.5
         
         self.textfile = self.lineEdit.text()
         self.textfile = str(self.textfile)
 
-        main(self.river,self.XSection,self.textfile,self.dem)
+        main(self.river,self.XSection,self.textfile,self.dem,resolution)
 
     def writeTxt(self):
         fileName = QFileDialog.getSaveFileName(self, 'Save RAS file', 

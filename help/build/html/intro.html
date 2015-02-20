@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Qgis2Ras documentation &mdash; Qgis2Ras 0.21 documentation</title>
+    <title>Introduction &mdash; Qgis2Ras 0.21 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Qgis2Ras 0.21 documentation" href="#" />
-    <link rel="next" title="Introduction" href="intro.html" /> 
+    <link rel="top" title="Qgis2Ras 0.21 documentation" href="index.html" />
+    <link rel="next" title="Limitation of current version" href="limitation.html" />
+    <link rel="prev" title="Qgis2Ras documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,9 +36,12 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="intro.html" title="Introduction"
+          <a href="limitation.html" title="Limitation of current version"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Qgis2Ras 0.21 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="index.html" title="Qgis2Ras documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Qgis2Ras 0.21 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -46,28 +50,18 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="qgis2ras-documentation">
-<h1>Qgis2Ras  documentation<a class="headerlink" href="#qgis2ras-documentation" title="Permalink to this headline">¶</a></h1>
-<p>The first plugin to connect QGIS to HEC-RAS software</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitation.html">Limitation of current version</a></li>
-</ul>
-</div>
-</div>
-<div class="section" id="about">
-<h1>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h1>
-<p>The Plugin have been developed by <strong>Pierluigi De Rosa</strong> and <strong>Studio Gfosservices</strong>. see <a class="reference external" href="http://www.gfosservices.it">http://www.gfosservices.it</a></p>
-</div>
-<div class="section" id="download">
-<h1>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h1>
-<p>The plugin code is hosted here <a class="reference external" href="https://github.com/pierluigiderosa/Qgis2Ras">https://github.com/pierluigiderosa/Qgis2Ras</a></p>
-<hr class="docutils" />
-<div class="section" id="what-s-new">
-<h2>What&#8217;s new<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h2>
-<p>2015.02.17, ver. 0.21 - it&#8217;s not necessary to follow a particular order in XS digitizing as the plugin order the XS basing on the river feature</p>
-</div>
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Q-RAS Plugin is a preprocessing for geometry preparation in HEC-RAS.</p>
+<p>The steps to using Q-RAS Plugin are fairly simple:</p>
+<ol class="arabic simple">
+<li>Load in QGIS a Digital Elevation Model in grid format in a projected crs</li>
+<li>Digitize a stream network vector line from <strong>upstream do downstream</strong></li>
+<li>Digitize a Cross sections vector line from <strong>left overbank to righ toverbank</strong> (it&#8217;s not necessary to follow a particular order in XS digitizing as the plugin order the XS basing on the river feature)</li>
+<li>Designate where to store your new geometry file</li>
+<li>press OK</li>
+<li>Open HEC-RAS and enjoy</li>
+</ol>
 </div>
 
 
@@ -76,24 +70,15 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Qgis2Ras  documentation</a><ul>
-</ul>
-</li>
-<li><a class="reference internal" href="#about">About</a></li>
-<li><a class="reference internal" href="#download">Download</a><ul>
-<li><a class="reference internal" href="#what-s-new">What&#8217;s new</a></li>
-</ul>
-</li>
-</ul>
-
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Qgis2Ras  documentation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="intro.html"
-                        title="next chapter">Introduction</a></p>
+  <p class="topless"><a href="limitation.html"
+                        title="next chapter">Limitation of current version</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/index.txt"
+    <li><a href="_sources/intro.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -120,9 +105,12 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="intro.html" title="Introduction"
+          <a href="limitation.html" title="Limitation of current version"
              >next</a> |</li>
-        <li><a href="#">Qgis2Ras 0.21 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="index.html" title="Qgis2Ras documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">Qgis2Ras 0.21 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -10,42 +10,10 @@ The first plugin to connect QGIS to HEC-RAS software
 
 .. toctree::
    :maxdepth: 2
-   
+
    intro
-   strings
-   datatypes
-   numeric
+   limitation
 
-.. index:: Introduction
-
-Introduction
-=================
-
-Q-RAS Plugin is a preprocessing for geometry preparation in HEC-RAS.
-
-The steps to using Q-RAS Plugin are fairly simple:
-
-#. Load in QGIS a Digital Elevation Model in grid format in a projected crs
-#. Digitize a stream network vector line from **upstream do downstream**
-#. Digitize a Cross sections vector line from **downstream do upstream** from **left overbank to righ toverbank**
-#. Designate where to store your new geometry file
-#. press OK
-#. Open HEC-RAS and enjoy
-
-.. index:: Limitation
-
-Limititation of current version
-=================
-
-This version of Plugin Q-RAS is an experimental version. It's need more tests anb presents some limitation:
-- only one river can be processed
-- only one reach can be processed
-- the plugin does not repoject your data so user have to use a consistent crs
-- the plugin is not able (for now) to integrate in geometry any structure, bridge, banks, obstructions
-
-
-.. image::  images/QRAS_screen.png
-   :align:   center
 
 
 
@@ -71,3 +39,9 @@ The plugin code is hosted here https://github.com/pierluigiderosa/Qgis2Ras
 
 .. * :ref:`search`
 
+
+-------------
+What's new
+-------------
+
+2015.02.17, ver. 0.21 - it's not necessary to follow a particular order in XS digitizing as the plugin order the XS basing on the river feature :ref:`intro` 
