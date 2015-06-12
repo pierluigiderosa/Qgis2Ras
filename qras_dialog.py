@@ -25,15 +25,19 @@ import os
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import uic
 from qgis.core import *
 from RASout import main
+from processing import getObject
+
 from qgis.utils import showPluginHelp
-from qras_dialog_base import Ui_Qgis2RasDialogBase
+#from qras_dialog_base import Ui_Qgis2RasDialogBase
 
 
+FORM_CLASS, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'qras_dialog_base.ui'))
 
-
-class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
+class Qgis2RasDialog(QDialog, FORM_CLASS):
     def __init__(self, iface): 
         """Constructor."""
         #~ super(Qgis2RasDialog, self).__init__(parent)
@@ -49,6 +53,8 @@ class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
         #~ setup personal gui
         self.setup_gui()
         
+
+        
         #general variables
         self.textfile = None
         self.XSection = None
@@ -58,9 +64,12 @@ class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
         self.plugin_builder_path = os.path.dirname(__file__)
         
         #connections
-        QObject.connect(self.browseBtn, SIGNAL( "clicked()" ), self.writeTxt)
+        self.browseBtn.clicked.connect(self.writeTxt)
+        #QObject.connect(self.browseBtn, SIGNAL( "clicked()" ), self.writeTxt)
+        #self.browseBtn.clicked.connect(self.writeDirName)
         self.button_box.helpRequested.connect(self.show_help)
         self.button_box.accepted.connect(self.runProfile)
+        self.vectorCombo.currentIndexChanged.connect(lambda: self.reloadFields())
         
     def show_help(self):
         """Display application help to the user."""
@@ -80,37 +89,80 @@ class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
         self.vectorCombo.clear()
         self.XSCombo.clear()
         self.rasterCombo.clear()
+        for item in ['feet', 'miles', 'meters', 'kilometers']:
+            self.stationCombo.addItem(item)
         for layer in self.iface.legendInterface().layers():
             if layer.type() == QgsMapLayer.VectorLayer and layer.geometryType() == QGis.Line:
                 self.vectorCombo.addItem( layer.name(), layer )
                 self.XSCombo.addItem( layer.name(), layer )
             if layer.type() == QgsMapLayer.RasterLayer:
                 self.rasterCombo.addItem( layer.name(), layer )
+        self.reloadFields()
+    
+    def reloadFields(self):
+        def getFieldNames(layer):
+            fields = layer.pendingFields()
+            fieldNames = []
+            for field in fields:
+                if not field.name() in fieldNames:
+                    fieldNames.append(unicode(field.name()))
+            return fieldNames
+        self.riverNameFieldCombo.clear()
+        self.reachNameFieldCombo.clear()
 
+        self.river = self.getLayer(self.vectorCombo)
+        try:
+            self.riverNameFieldCombo.addItems(getFieldNames(self.river))
+            self.reachNameFieldCombo.addItems(getFieldNames(self.river))
+        except:
+            pass
 
+    
+    def getLayer(self, combo):
+        idx = combo.currentIndex()
+        layer = combo.itemData(idx)
+        return layer
         
-
     def runProfile(self):
         #~ get the layer from the combos:
         #~ For XSection
-        XSindex = self.XSCombo.currentIndex()
-        self.index = XSindex
-        self.XSection = self.XSCombo.itemData(XSindex)
+#        XSindex = self.XSCombo.currentIndex()
+#        self.index = XSindex
+#        self.XSection = self.XSCombo.itemData(XSindex)
+        self.XSection = self.getLayer(self.XSCombo)
         #~ For river
-        RivIndex = self.vectorCombo.currentIndex()
-        self.river = self.vectorCombo.itemData(RivIndex)
+#        RivIndex = self.vectorCombo.currentIndex()
+#        self.river = self.vectorCombo.itemData(RivIndex)
+        self.river = self.getLayer(self.vectorCombo)
         #~ For raster
-        DemIndex = self.rasterCombo.currentIndex()
-        self.dem = self.rasterCombo.itemData(DemIndex)
+#        DemIndex = self.rasterCombo.currentIndex()
+#        self.dem = self.rasterCombo.itemData(DemIndex)
+        self.dem = self.getLayer(self.rasterCombo)
         # I take the X Y resolution supposing its a square pixel
         resX = self.dem.rasterUnitsPerPixelX()
         resY = self.dem.rasterUnitsPerPixelY()
         resolution = (resX**2+resY**2)**0.5
         
-        self.textfile = self.lineEdit.text()
-        self.textfile = str(self.textfile)
+        self.riverField = str(self.riverNameFieldCombo.currentText())
+        self.reachField = str(self.reachNameFieldCombo.currentText())
+        
+        #generate conversion factor for river stationing
+        units = str(self.stationCombo.currentText())
+        if units == 'feet':
+            convFactor = 1.0
+        elif units == 'miles':
+            convFactor = 1.0/5280.0
+        elif units == 'meters':
+            convFactor = 1.0/3.2808
+        else:
+            convFactor = 1.0/3.2808/1000.0     
+        if self.rbM.isChecked():
+            convFactor =  convFactor*3.2808
+        
+        #self.textfile = str(self.lineEdit.text())
 
-        main(self.river,self.XSection,self.textfile,self.dem,resolution)
+
+        main(self.river,self.XSection,self.textfile,self.dem,resolution, self.dbase, self.riverField, self.reachField, units, convFactor)
 
     def writeTxt(self):
         fileName = QFileDialog.getSaveFileName(self, 'Save RAS file', 
@@ -118,3 +170,10 @@ class Qgis2RasDialog(QDialog, Ui_Qgis2RasDialogBase):
         fileName = os.path.splitext(str(fileName))[0]+'.sdf'
         self.lineEdit.setText(fileName)
         self.textfile = fileName
+        self.dbase = os.path.splitext(str(fileName))[0]+'.sqlite'
+
+#    def writeDirName(self):
+#        self.outputDir.clear()
+#        self.dirName = QFileDialog.getExistingDirectory(self, 'Select Output Directory')
+#        self.outputDir.setText(self.dirName)
+#        self.dbase = str(os.path.join(self.dirName,'QRAS.sqlite'))

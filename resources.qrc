@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/plugins/Qgis2Ras" >
-        <file>icon.png</file>
-    </qresource>
-</RCC>
