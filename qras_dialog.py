@@ -162,7 +162,9 @@ class Qgis2RasDialog(QDialog, FORM_CLASS):
         #self.textfile = str(self.lineEdit.text())
 
 
-        main(self.river,self.XSection,self.textfile,self.dem,resolution, self.dbase, self.riverField, self.reachField, units, convFactor)
+        finished = main(self.river,self.XSection,self.textfile,self.dem,resolution, self.dbase, self.riverField, self.reachField, units, convFactor)
+        if finished:
+            self.iface.messageBar().pushMessage("QRAS", 'Output .sdf file and sqlite database located here:\n{}\n{}\nPlease delete when finished'.format(self.dbase.split('.sqlite')[0]+'.sdf',self.dbase),duration=30)
 
     def writeTxt(self):
         fileName = QFileDialog.getSaveFileName(self, 'Save RAS file', 
@@ -171,9 +173,11 @@ class Qgis2RasDialog(QDialog, FORM_CLASS):
         self.lineEdit.setText(fileName)
         self.textfile = fileName
         self.dbase = os.path.splitext(str(fileName))[0]+'.sqlite'
+        if os.path.exists(self.dbase):
+            QMessageBox.warning(self,'Error',
+                                'Spatialite database already exists, please rename')
+            self.lineEdit.setText(None)
+            self.textfile = None
+            self.dbase = None
+        
 
-#    def writeDirName(self):
-#        self.outputDir.clear()
-#        self.dirName = QFileDialog.getExistingDirectory(self, 'Select Output Directory')
-#        self.outputDir.setText(self.dirName)
-#        self.dbase = str(os.path.join(self.dirName,'QRAS.sqlite'))

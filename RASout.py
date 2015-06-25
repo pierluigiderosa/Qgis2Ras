@@ -7,8 +7,10 @@
                              -------------------
         begin                : 2014-12-18
         git sha              : $Format:%H$
-        copyright            : (C) 2014 by Pierluigi De Rosa
+        copyright            : (C) 2015 by Pierluigi De Rosa 
+                                & M. Weier - North Dakota State Water Commission
         email                : pierluigi.derosa@gfosservices.it
+                                mweier@nd.gov
  ***************************************************************************/
 
 /***************************************************************************
@@ -285,21 +287,14 @@ def loadVectorsIntoDB(layers, dbase, customCRSFlag, srid):
     for layer in layers:
         uri.setDataSource('',layer.name(),'the_geom')
         ret, errMsg = QgsVectorLayerImport.importLayer(layer, uri.uri(), 'spatialite', layer.crs(), False, False, options)
-        print uri.uri()
-        print errMsg
-    if customCRSFlag:
-        pass
-#        dbmgr = spatialiteManager(dbase)
-#        sql = """UPDATE geometry_columns SET srid = {}""".format(srid)
-#        dbmgr.query(sql)
-
-#def loadVectorsFromDB(layerName, dbase):
-#    uri = QgsDataSourceURI()
-#    uri.setDatabase(dbase)
-#    uri.setDataSource('', layerName, 'the_geom')
-#    vlayer = QgsVectorLayer(uri.uri(), layerName, 'spatialite')
-#    QgsMapLayerRegistry.instance().addMapLayer(vlayer)
-#    return vlayer
+        
+        ## for custom CRS
+        if customCRSFlag:
+            dbmgr = spatialiteManager(dbase)
+            sql = """UPDATE geometry_columns SET srid = {} WHERE f_table_name = '{}'""".format(srid, layer.name().lower())
+            dbmgr.query(sql)
+            sql = """UPDATE {} SET the_geom = SetSRID(the_geom, {})""".format(layer.name(), srid)
+            dbmgr.query(sql)
 
 
 def createDB(layer, dbase, srid):
@@ -307,20 +302,19 @@ def createDB(layer, dbase, srid):
     dbmgr = spatialiteManager(dbase)
     # create database
     dbmgr.createDB()
-    
-    # check if projection doesn't exist in spatialite database
+    # for custom CRS,  check if projection doesn't exist in spatialite database
     sql = """SELECT COUNT(*) FROM spatial_ref_sys WHERE srid = {}""".format(srid)
     count = dbmgr.query(sql).fetchall()[0][0]
     if count == 0: # add def. if needed
-        #not needed...doesn't seem to be supported in spatilite
-#        sql = """INSERT INTO spatial_ref_sys(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) VALUES({0}, '', '', '{3}', '{1}', '{2}')""".format(srid, layer.crs().toProj4(), layer.crs().toWkt(), layer.crs().description())
-#        dbmgr.query(sql)
+        sql = """INSERT INTO spatial_ref_sys(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) VALUES({0}, '', '', '{3}', '{1}', '{2}')""".format(srid, layer.crs().toProj4(), layer.crs().toWkt(), layer.crs().description())
+        dbmgr.query(sql)
         customCRSFlag = True  
     else:
         customCRSFlag = False
     return customCRSFlag
 
 def attributeRiver(riverLayer, riverField, reachField, dbase, srid):
+    """attributes river layer with standard columns"""
     dbmgr = spatialiteManager(dbase)
     # create table
     sql = """CREATE TABLE river (id INTEGER PRIMARY KEY, river TEXT, reach TEXT, us_junction TEXT, ds_junction TEXT, "us_sa-2d" TEXT, "ds_sa-2d" TEXT, mergedGeom NULL)"""
@@ -328,19 +322,23 @@ def attributeRiver(riverLayer, riverField, reachField, dbase, srid):
     # add geom column
     sql = """SELECT AddGeometryColumn('river', 'the_geom', {}, 'LINESTRING', 'XY')""".format(srid)
     dbmgr.query(sql)
+    #insert river attributes
     sql = """INSERT INTO river SELECT NULL as id, {0} as river, {1} as reach, NULL as us_junction, NULL as ds_junction, NULL as "us_sa-2d", NULL as "ds_sa-2d", the_geom, the_geom FROM {2}""".format(riverField, reachField, riverLayer)
     dbmgr.query(sql)
     dbmgr.spatialIndex('river','the_geom')
+    
+    #merge geometries in case of multiple reaches
     sql = """select river, count(*), asWkt(st_lineMerge(st_union(the_geom))) FROM river GROUP By river"""
     result = dbmgr.query(sql).fetchall()
     for river, count, mergedGeom in result:
-        if count>1:
+        if int(count)>1:
             sql = """UPDATE river SET mergedGeom = st_lineMerge(ST_GeomFromText('{}')) WHERE river LIKE '{}'""".format(mergedGeom, river)
             dbmgr.query(sql)
+            
+    #remove table
+    #dbmgr.removeSpatialIndex('{}'.format(riverLayer),'the_geom')
     dbmgr.discardGeom(riverLayer, 'the_geom')
     dbmgr.dropTables([riverLayer])
-#    slRiverLayer = loadVectorsFromDB('river', dbase)
-#    return slRiverLayer
 
 def attributeXS(xsLayer, dbase, srid, convFactor):
     dbmgr = spatialiteManager(dbase)
@@ -372,24 +370,16 @@ def attributeXS(xsLayer, dbase, srid, convFactor):
         
     # update last row for each river
     dbmgr.query("""UPDATE xs SET lengthChannel = river_station, lengthROB = river_station, lengthLOB = river_station WHERE lengthChannel = 0""")
-    dbmgr.query("""UPDATE xs SET river_station = cast(round(river_station*{}, 4) as text)""".format(convFactor))
-    
-#    slXSLayer = loadVectorsFromDB('xs', dbase)
-#    return slXSLayer
-     
-    
-                
+    # update river stationing
+    dbmgr.query("""UPDATE xs SET river_station = cast(round(river_station*{}, 3) as text)""".format(convFactor))
+
 
 def main(river,xsections,file_strin_path,rlayer,res, dbase, riverField, reachField, units, convFactor):
     srid = river.crs().authid()[5:]
     customCRSFlag = createDB(river, dbase, srid)
-    # add to fix customCRS issues...doesn't seem to be supported in spatilite
-    if customCRSFlag:
-        srid = 0
     loadVectorsIntoDB([river, xsections], dbase, customCRSFlag, srid)
     attributeRiver(str(river.name()), riverField, reachField, dbase, srid)
     attributeXS(str(xsections.name()), dbase, srid, convFactor)
-    
     
     outfile = open(file_strin_path, 'w')
     output_headers(dbase, rlayer, outfile, units)
@@ -401,4 +391,5 @@ def main(river,xsections,file_strin_path,rlayer,res, dbase, riverField, reachFie
     f.readline()
     if f.newlines == '\n':
         line_endings(file_strin_path)
+    return True
 

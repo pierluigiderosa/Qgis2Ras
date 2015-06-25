@@ -10,8 +10,8 @@
 name=Q-RAS
 qgisMinimumVersion=2.0
 description=Qgis 2 RAS preprocessor
-version=0.21
-author=Pierluigi De Rosa
+version=0.3
+author=Pierluigi De Rosa 
 email=pierluigi.derosa@gfosservices.it
 
 # End of mandatory metadata
@@ -19,7 +19,9 @@ email=pierluigi.derosa@gfosservices.it
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-changelog= now the cross section order is evaluated internally into the plugin. It's not required to digitize the cross section in a specific order but only from left to right
+changelog=
+	0.3 Supports multiple reaches, attributes vector layers and packages them in a Spatialite database, adds unit support and river stationing support
+	0.21 now the cross section order is evaluated internally into the plugin. It's not required to digitize the cross section in a specific order but only from left to right
 
 # Tags are comma separated with spaces allowed
 tags=RAS,GIS
