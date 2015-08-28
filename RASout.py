@@ -31,7 +31,7 @@ from osgeo import ogr,_ogr
 from lengthalongline import pointInterpolate
 from numpy import array,diff
 from numpy import append as nappend
-from os import linesep as LineSep  
+from os import linesep as LineSep
 
 from pyspatialite import dbapi2 as db
 
@@ -45,35 +45,35 @@ class spatialiteManager(object):
         # initializing Spatial MetaData
         # using v.2.4.0 this will automatically create
         # GEOMETRY_COLUMNS and SPATIAL_REF_SYS
-        sql = 'SELECT InitSpatialMetadata()'
+        sql = 'SELECT InitSpatialMetadata(1)'
         self.query(sql)
 
     def query(self, sql):
         self.cur.execute(sql)
         self.conn.commit()
         return self.cur
-        
+
     def spatialIndex(self, table, geomCol):
         sql = """SELECT CreateSpatialIndex('{0}', '{1}')""".format(table, geomCol)
         self.cur.execute(sql)
         self.conn.commit()
-        
+
     def removeSpatialIndex(self, table, geomCol):
         sql = """SELECT DisableSpatialIndex('{0}', '{1}')""".format(table, geomCol)
         self.cur.execute(sql)
         self.conn.commit()
         sql = """DROP TABLE idx_{}_{}""".format(table, geomCol)
         self.cur.execute(sql)
-        self.conn.commit()       
+        self.conn.commit()
 
     def dropTables(self,tables):
         for i in tables:
             sql = '''DROP TABLE IF EXISTS {}'''.format(i)
             self.cur.execute(sql)
-            self.conn.commit()        
+            self.conn.commit()
         self.cur.execute('VACUUM')
         self.conn.commit()
-        
+
     def discardGeom(self, table, geomCol):
         sql = """SELECT DiscardGeometryColumn('{}', '{}')""".format(table, geomCol)
         self.cur.execute(sql)
@@ -81,7 +81,7 @@ class spatialiteManager(object):
 
     def __del__(self):
         print 'close db'
-        self.conn.close() 
+        self.conn.close()
 
 def output_headers(dbase, rlayer, outfile, units):
     """
@@ -101,10 +101,10 @@ def output_headers(dbase, rlayer, outfile, units):
     outfile.write("DTM TYPE: GRID\n")
     outfile.write("DTM: {}\n".format(rlayer.name()))
     outfile.write("STREAM LAYER: river\n")
-    
+
     # write out how many reaches and cross sections
     sql = """SELECT COUNT(*) FROM river"""
-    
+
     num_reaches = dbmgr.query(sql).fetchall()[0][0]
     outfile.write("NUMBER OF REACHES: {}\n".format(num_reaches))
     outfile.write("CROSS-SECTION LAYER: xs\n")
@@ -112,7 +112,6 @@ def output_headers(dbase, rlayer, outfile, units):
     num_xsects = dbmgr.query(sql).fetchall()[0][0]
     outfile.write("NUMBER OF CROSS-SECTIONS: {}\n".format(num_xsects))
     outfile.write("MAP PROJECTION: \nPROJECTION ZONE: \nDATUM: \nVERTICAL DATUM: \n")
-
 
     # write out the extents
     sql = """SELECT MbrMinX(the_geom),MbrmaxX(the_geom), MbrMinY(the_geom), MbrMaxY(the_geom)  from river"""
@@ -124,6 +123,7 @@ def output_headers(dbase, rlayer, outfile, units):
     outfile.write("XMAX: {}\n".format(xmax))
     outfile.write("YMAX: {}\n".format(ymax))
     outfile.write("END SPATIAL EXTENT:\n")
+    outfile.write("UNITS: " + units + LineSep)
     outfile.write("END HEADER:\n\n\n")
 
 
@@ -137,7 +137,7 @@ def output_centerline(dbase, rlayer, outfile):
     dbmgr = spatialiteManager(dbase)
     outfile.write("BEGIN STREAM NETWORK:\n")
 #    # TODO: Add junctions
-    
+
     # Begin with the list of feature in reach
     sql = """SELECT *, asWkt(the_geom) FROM river"""
     features = dbmgr.query(sql)
@@ -159,17 +159,17 @@ def output_centerline(dbase, rlayer, outfile):
         outfile.write("CENTERLINE:\n")  # Now the actual points along centerlinep)
         for point in points:
             (X,Y,Z) = queryRaster(point,rlayer)
-            outfile.write( "\t%.4f, %.4f, %.6f, " %(X,Y,Z)) 
+            outfile.write( "\t%.4f, %.4f, %.6f, " %(X,Y,Z))
             outfile.write(LineSep)
         outfile.write("END:\n\n")
 
-    outfile.write("END STREAM NETWORK:\n\n\n") 
-    
+    outfile.write("END STREAM NETWORK:\n\n\n")
+
 
 def queryRaster(point,raster):
     p = QgsPoint(point[0],point[1])
     if isInExtent(raster,point):
-        provider=raster.dataProvider()		    			    
+        provider=raster.dataProvider()
         identifyresult = provider.identify(p,QgsRaster.IdentifyFormatValue,QgsRectangle())
         results = identifyresult.results()
         val = results[1]
@@ -186,13 +186,13 @@ def getVertex(the_geom,distance=0):
         length = the_geom.length()
         currentdistance = distance
         points = []
-        
+
         wkbgeom = the_geom.asWkb()
         ogrgeom = ogr.CreateGeometryFromWkb(wkbgeom)
         if ogrgeom.GetGeometryName() == 'LINESTRING' :
             pointsL = ogrgeom.GetPoints()
-        points.append(pointsL[0]) 
-               
+        points.append(pointsL[0])
+
         while currentdistance < length:
             # Get a point along the line at the current distance
             point = the_geom.interpolate(currentdistance)
@@ -201,19 +201,19 @@ def getVertex(the_geom,distance=0):
             points.append((Qpoint.x(),Qpoint.y()))
             # Increase the distance
             currentdistance = currentdistance + distance
-        
-        points.append(pointsL[-1]) 
+
+        points.append(pointsL[-1])
         return points
-    
+
 def output_xsections(dbase, outfile, rlayer, res):
     """
     Output the river network, including centerline for each reach
     and coordinates for all stations along each reach
     """
     dbmgr = spatialiteManager(dbase)
-    outfile.write("BEGIN CROSS-SECTIONS:\n\n")	
+    outfile.write("BEGIN CROSS-SECTIONS:\n\n")
 
-    
+
     sql = """SELECT *, AsWKT(the_geom) FROM xs ORDER BY river, river_station DESC"""
     features = dbmgr.query(sql)
     for feature in features:
@@ -224,13 +224,13 @@ def output_xsections(dbase, outfile, rlayer, res):
         lengthChannel = feature[5]
         lengthROB = feature[6]
         lBank = feature[9]
-        rBank = feature[10]   
-        lLevee = feature[11] 
-        lLeveeElev = feature[12] 
+        rBank = feature[10]
+        lLevee = feature[11]
+        lLeveeElev = feature[12]
         rLevee = feature[13]
-        rLeveeElev = feature[14] 
+        rLeveeElev = feature[14]
         the_geom = QgsGeometry.fromWkt(str(feature[-1]))
-        
+
         outfile.write("CROSS-SECTION:\n")
         outfile.write("STREAM ID: %s\n" % (riverName))
         outfile.write("REACH ID: %s\n" % (reachName))
@@ -238,8 +238,8 @@ def output_xsections(dbase, outfile, rlayer, res):
         if lBank and rBank:
             outfile.write("BANK POSITIONS: {}, {}\n".format(lBank,rBank))
         outfile.write(LineSep)
-        outfile.write("REACH LENGTHS: {0:.4f} ,{1:.4f}, {2:.4f}\n".format (lengthROB,lengthChannel,lengthLOB)) 
-        
+        outfile.write("REACH LENGTHS: {0:.4f} ,{1:.4f}, {2:.4f}\n".format (lengthROB,lengthChannel,lengthLOB))
+
         outfile.write("CUT LINE:\n")
         points = getVertex(the_geom)
         for point in points:
@@ -248,7 +248,7 @@ def output_xsections(dbase, outfile, rlayer, res):
         points = getVertex(the_geom,res)
         for point in points:
             (X,Y,Z) = queryRaster(point,rlayer)
-            outfile.write( "\t{0:.4f}, {1:.4f}, {2:.4f}\n" .format(X,Y,Z)) 
+            outfile.write( "\t{0:.4f}, {1:.4f}, {2:.4f}\n" .format(X,Y,Z))
         outfile.write("END:\n\n")
 
     outfile.write("END CROSS-SECTIONS:\n\n\n")
@@ -260,7 +260,7 @@ def isInExtent(raster,point):
 	yMin = rextent.yMinimum()
 	xMax = rextent.xMaximum()
 	yMax = rextent.yMaximum()
-    
+
 	if (xMin<point[0]<xMax) and (yMin<point[1]<yMax):
 	    return True
 	return False
@@ -276,7 +276,7 @@ def line_endings(text_file):
 
 def getKey(item):
     return item[0]
-    
+
 def loadVectorsIntoDB(layers, dbase, customCRSFlag, srid):
     #database import options
     options = {}
@@ -287,7 +287,7 @@ def loadVectorsIntoDB(layers, dbase, customCRSFlag, srid):
     for layer in layers:
         uri.setDataSource('',layer.name(),'the_geom')
         ret, errMsg = QgsVectorLayerImport.importLayer(layer, uri.uri(), 'spatialite', layer.crs(), False, False, options)
-        
+
         ## for custom CRS
         if customCRSFlag:
             dbmgr = spatialiteManager(dbase)
@@ -308,7 +308,7 @@ def createDB(layer, dbase, srid):
     if count == 0: # add def. if needed
         sql = """INSERT INTO spatial_ref_sys(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) VALUES({0}, '', '', '{3}', '{1}', '{2}')""".format(srid, layer.crs().toProj4(), layer.crs().toWkt(), layer.crs().description())
         dbmgr.query(sql)
-        customCRSFlag = True  
+        customCRSFlag = True
     else:
         customCRSFlag = False
     return customCRSFlag
@@ -326,7 +326,7 @@ def attributeRiver(riverLayer, riverField, reachField, dbase, srid):
     sql = """INSERT INTO river SELECT NULL as id, {0} as river, {1} as reach, NULL as us_junction, NULL as ds_junction, NULL as "us_sa-2d", NULL as "ds_sa-2d", the_geom, the_geom FROM {2}""".format(riverField, reachField, riverLayer)
     dbmgr.query(sql)
     dbmgr.spatialIndex('river','the_geom')
-    
+
     #merge geometries in case of multiple reaches
     sql = """select river, count(*), asWkt(st_lineMerge(st_union(the_geom))) FROM river GROUP By river"""
     result = dbmgr.query(sql).fetchall()
@@ -334,7 +334,7 @@ def attributeRiver(riverLayer, riverField, reachField, dbase, srid):
         if int(count)>1:
             sql = """UPDATE river SET mergedGeom = st_lineMerge(ST_GeomFromText('{}')) WHERE river LIKE '{}'""".format(mergedGeom, river)
             dbmgr.query(sql)
-            
+
     #remove table
     #dbmgr.removeSpatialIndex('{}'.format(riverLayer),'the_geom')
     dbmgr.discardGeom(riverLayer, 'the_geom')
@@ -360,14 +360,14 @@ def attributeXS(xsLayer, dbase, srid, convFactor):
     dbmgr.removeSpatialIndex('{}'.format(xsLayer),'the_geom')
     dbmgr.discardGeom(xsLayer, 'the_geom')
     dbmgr.dropTables([xsLayer])
-    
+
     # update xs lengths
     sql = """SELECT q.id, q.river, q.reach, q.river_station, q.river_station - coalesce((select r.river_station FROM xs as r where r.river = q.river and r.river_station < q.river_station order by r.river_station DESC limit 1), q.river_station) as length FROM xs as q"""
     result = dbmgr.query(sql).fetchall()
     for pkid, riverName, reachName, river_station, length in result:
         sql = """UPDATE xs SET lengthChannel = {0}, lengthROB = {0}, lengthLOB = {0} WHERE id = {1} AND river LIKE '{2}' and reach LIKE '{3}'""".format(length, pkid, riverName, reachName)
         dbmgr.query(sql)
-        
+
     # update last row for each river
     dbmgr.query("""UPDATE xs SET lengthChannel = river_station, lengthROB = river_station, lengthLOB = river_station WHERE lengthChannel = 0""")
     # update river stationing
@@ -380,7 +380,7 @@ def main(river,xsections,file_strin_path,rlayer,res, dbase, riverField, reachFie
     loadVectorsIntoDB([river, xsections], dbase, customCRSFlag, srid)
     attributeRiver(str(river.name()), riverField, reachField, dbase, srid)
     attributeXS(str(xsections.name()), dbase, srid, convFactor)
-    
+
     outfile = open(file_strin_path, 'w')
     output_headers(dbase, rlayer, outfile, units)
     output_centerline(dbase, rlayer, outfile)
