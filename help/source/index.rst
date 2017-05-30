@@ -45,3 +45,4 @@ What's new
 -------------
 
 2015.02.17, ver. 0.21 - it's not necessary to follow a particular order in XS digitizing as the plugin order the XS basing on the river feature
+2016.03.01, ver. 0.3  - Translation complete for English and Italian,banks and flowlines are now computed

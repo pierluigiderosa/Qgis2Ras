@@ -10,7 +10,7 @@
 name=Q-RAS
 qgisMinimumVersion=2.0
 description=Qgis 2 RAS preprocessor
-version=0.21
+version=0.3
 author=Pierluigi De Rosa
 email=pierluigi.derosa@gfosservices.it
 
@@ -19,7 +19,11 @@ email=pierluigi.derosa@gfosservices.it
 # Optional items:
 
 # Uncomment the following line and add your changelog:
-changelog= now the cross section order is evaluated internally into the plugin. It's not required to digitize the cross section in a specific order but only from left to right
+changelog:
+    Version 0.21:
+        now the cross section order is evaluated internally into the plugin. It's not required to digitize the cross section in a specific order but only from left to right
+    Version 0.3:
+        added the flowlines and banks computation. Traslation Italian/English.
 
 # Tags are comma separated with spaces allowed
 tags=RAS,GIS
@@ -29,7 +33,7 @@ tracker=https://github.com/pierluigiderosa/Qgis2Ras/issues
 repository=https://github.com/pierluigiderosa/Qgis2Ras/
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

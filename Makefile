@@ -48,7 +48,7 @@ PY_FILES = \
 	qras_dialog.py \
 	__init__.py
 
-UI_FILES = qras_dialog_base.ui
+UI_FILES = qras_dialog_base.ui RASout.py lengthalongline.py
 
 EXTRAS = icon.png metadata.txt
 

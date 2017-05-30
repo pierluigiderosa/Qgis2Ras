@@ -20,9 +20,10 @@ def pointInterpolate(geom,point):
         p2 = linegeom[seg+1]
         length += distToPoint(p1,p2)
         seg += 1
-        
+    
     pointProj = closesPointToSeg(segPoints[0],segPoints[1],point)
     partSegLength = distToPoint(segPoints[0],pointProj)
+    partSegLength += distToPoint(pointProj,point)
     length += partSegLength
     return length
         
