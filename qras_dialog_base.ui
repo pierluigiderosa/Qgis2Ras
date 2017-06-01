@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>435</width>
-    <height>525</height>
+    <width>538</width>
+    <height>583</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,36 +56,41 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="vectorCombo"/>
+                 <widget class="QgsMapLayerComboBox" name="vectorComboQgs"/>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QFormLayout" name="formLayout">
-                <property name="fieldGrowthPolicy">
-                 <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-                </property>
-                <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_10">
+                <item>
                  <widget class="QLabel" name="label_5">
                   <property name="text">
                    <string>River Name Field</string>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="1">
-                 <widget class="QComboBox" name="riverNameFieldCombo"/>
+                <item>
+                 <widget class="QgsFieldComboBox" name="riverNameFieldComboQgs"/>
                 </item>
-                <item row="1" column="0">
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <item>
                  <widget class="QLabel" name="label_6">
                   <property name="text">
                    <string>Reach Name Field</string>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
-                 <widget class="QComboBox" name="reachNameFieldCombo"/>
+                <item>
+                 <widget class="QgsFieldComboBox" name="reachNameFieldComboQgs"/>
                 </item>
-                <item row="2" column="0">
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_12">
+                <item>
                  <widget class="QLabel" name="label_8">
                   <property name="text">
                    <string>River Stationing Output Units</string>
@@ -95,7 +100,7 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="1">
+                <item>
                  <widget class="QComboBox" name="stationCombo"/>
                 </item>
                </layout>
@@ -113,6 +118,9 @@
               </widget>
              </item>
              <item>
+              <widget class="QgsMapLayerComboBox" name="XSComboQgs"/>
+             </item>
+             <item>
               <widget class="QComboBox" name="XSCombo"/>
              </item>
             </layout>
@@ -125,6 +133,9 @@
                 <string>DEM Raster Layer</string>
                </property>
               </widget>
+             </item>
+             <item>
+              <widget class="QgsMapLayerComboBox" name="rasterComboQgs"/>
              </item>
              <item>
               <widget class="QComboBox" name="rasterCombo"/>
@@ -179,14 +190,14 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_6">
              <item>
-              <widget class="QLabel" name="label_11">
+              <widget class="QCheckBox" name="flowlinesCheck">
                <property name="text">
                 <string>Flowlines</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="flowCombo"/>
+              <widget class="QgsMapLayerComboBox" name="flowComboQgs"/>
              </item>
             </layout>
            </item>
@@ -200,21 +211,21 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="flowfieldsCombo"/>
+              <widget class="QgsFieldComboBox" name="flowfieldsComboQgs"/>
              </item>
             </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
-              <widget class="QLabel" name="label_10">
+              <widget class="QCheckBox" name="checkBox">
                <property name="text">
                 <string>River banks</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="banksCombo"/>
+              <widget class="QgsMapLayerComboBox" name="banksComboQgs"/>
              </item>
             </layout>
            </item>
@@ -228,7 +239,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="bankfieldsCombo"/>
+              <widget class="QgsFieldComboBox" name="bankfieldsComboQgs"/>
              </item>
             </layout>
            </item>
@@ -384,6 +395,18 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFieldComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsfieldcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsMapLayerComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsmaplayercombobox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -393,8 +416,8 @@ p, li { white-space: pre-wrap; }
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
+     <x>42</x>
+     <y>562</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>
@@ -409,12 +432,172 @@ p, li { white-space: pre-wrap; }
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
+     <x>42</x>
+     <y>562</y>
     </hint>
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>flowComboQgs</sender>
+   <signal>layerChanged(QgsMapLayer*)</signal>
+   <receiver>flowfieldsComboQgs</receiver>
+   <slot>setLayer(QgsMapLayer*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>505</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>447</x>
+     <y>179</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>banksComboQgs</sender>
+   <signal>layerChanged(QgsMapLayer*)</signal>
+   <receiver>bankfieldsComboQgs</receiver>
+   <slot>setLayer(QgsMapLayer*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>486</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>flowComboQgs</sender>
+   <signal>activated(QString)</signal>
+   <receiver>flowfieldsComboQgs</receiver>
+   <slot>setField(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>505</x>
+     <y>137</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>505</x>
+     <y>179</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>banksComboQgs</sender>
+   <signal>activated(QString)</signal>
+   <receiver>bankfieldsComboQgs</receiver>
+   <slot>setField(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>423</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>426</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>vectorComboQgs</sender>
+   <signal>layerChanged(QgsMapLayer*)</signal>
+   <receiver>riverNameFieldComboQgs</receiver>
+   <slot>setLayer(QgsMapLayer*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>453</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>455</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>vectorComboQgs</sender>
+   <signal>layerChanged(QgsMapLayer*)</signal>
+   <receiver>reachNameFieldComboQgs</receiver>
+   <slot>setLayer(QgsMapLayer*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>496</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>496</x>
+     <y>246</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>flowlinesCheck</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>flowComboQgs</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>117</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>flowlinesCheck</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>flowfieldsComboQgs</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>324</x>
+     <y>167</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>banksComboQgs</receiver>
+   <slot>setShown(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>115</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>316</x>
+     <y>211</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>bankfieldsComboQgs</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>285</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>

@@ -10,7 +10,7 @@
 name=Q-RAS
 qgisMinimumVersion=2.0
 description=Qgis 2 RAS preprocessor
-version=0.3
+version=0.4
 author=Pierluigi De Rosa
 email=pierluigi.derosa@gfosservices.it
 
@@ -24,6 +24,8 @@ changelog:
         now the cross section order is evaluated internally into the plugin. It's not required to digitize the cross section in a specific order but only from left to right
     Version 0.3:
         added the flowlines and banks computation. Traslation Italian/English.
+    Version 0.4
+       correction of small gui bug. correction of calculation of ROB e LOB for same cases
 
 # Tags are comma separated with spaces allowed
 tags=RAS,GIS

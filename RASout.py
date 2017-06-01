@@ -210,8 +210,8 @@ def output_xsections(xsects, outfile, elev, res, river,
                 Rflow = RightFeature.geometry()
 
             if banks is not None:
-                bankR = getGeomByAtt(banks, bankFields,"right")
-                bankL = getGeomByAtt(banks, bankFields,"left")
+                bankR = getGeomByAtt(banks, bankFields, "right")
+                bankL = getGeomByAtt(banks, bankFields, "left")
                 bankRgeom = bankR.geometry()
                 bankLgeom = bankL.geometry()
 
@@ -229,13 +229,13 @@ def output_xsections(xsects, outfile, elev, res, river,
                 distSP = pointInterpolate(riv_geom, pt_int.asPoint())
 
                 if flowlines is not None:
-                    Ldist = pointInterpolate(Lflow,Lpt.asPoint())
-                    Rdist = pointInterpolate(Rflow,Rpt.asPoint())
+                    Ldist = pointInterpolate(Lflow, Lpt.asPoint())
+                    Rdist = pointInterpolate(Rflow, Rpt.asPoint())
                 else:
                     Ldist = 0
                     Rdist = 1
 
-                XSstation.append((distSP, XSfeature,Ldist,Rdist))
+                XSstation.append((distSP, XSfeature, Ldist, Rdist))
 
         # sorting tuple according to the distance US
         XSstationASC = sorted(XSstation, key=getKey)
