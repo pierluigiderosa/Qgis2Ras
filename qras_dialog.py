@@ -97,16 +97,14 @@ class Qgis2RasDialog(QDialog, FORM_CLASS):
         self.XSComboQgs.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.rasterComboQgs.setFilters(QgsMapLayerProxyModel.RasterLayer)
         self.banksComboQgs.setFilters(QgsMapLayerProxyModel.VectorLayer)
-        self.banksComboQgs.hide()
         self.flowComboQgs.setFilters(QgsMapLayerProxyModel.VectorLayer)
-        self.flowComboQgs.hide()
         for item in ['meters','feet', 'miles', 'kilometers']:
             self.stationCombo.addItem(item)
         #fill with null additional info
-        self.banksComboQgs.hide()
-        self.flowComboQgs.hide()
-        self.flowfieldsComboQgs.hide()
-        self.bankfieldsComboQgs.hide()
+        self.banksComboQgs.setDisabled(True)
+        self.flowComboQgs.setDisabled(True)
+        self.flowfieldsComboQgs.setDisabled(True)
+        self.bankfieldsComboQgs.setDisabled(True)
 
 
 
@@ -117,15 +115,15 @@ class Qgis2RasDialog(QDialog, FORM_CLASS):
         # ~ For river
         self.river = self.vectorComboQgs.currentLayer()
         # ~ For banks
-        if self.banksComboQgs.isHidden:
-            self.banks = None
-        else:
+        if self.flowlinesCheck.isChecked():
             self.banks = self.banksComboQgs.currentLayer()
-         # ~ For flowlines
-        if self.flowComboQgs.isHidden:
-            self.flowlines = None
         else:
+            self.banks = None
+        #  # ~ For flowlines
+        if self.riverChech.isChecked():
             self.flowlines = self.flowComboQgs.currentLayer()
+        else:
+            self.flowlines = None
         # ~ For raster
         self.dem = self.rasterComboQgs.currentLayer()
         # I take the X Y resolution supposing its a square pixel

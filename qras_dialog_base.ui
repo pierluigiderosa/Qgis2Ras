@@ -120,9 +120,6 @@
              <item>
               <widget class="QgsMapLayerComboBox" name="XSComboQgs"/>
              </item>
-             <item>
-              <widget class="QComboBox" name="XSCombo"/>
-             </item>
             </layout>
            </item>
            <item>
@@ -136,9 +133,6 @@
              </item>
              <item>
               <widget class="QgsMapLayerComboBox" name="rasterComboQgs"/>
-             </item>
-             <item>
-              <widget class="QComboBox" name="rasterCombo"/>
              </item>
             </layout>
            </item>
@@ -218,7 +212,7 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
-              <widget class="QCheckBox" name="checkBox">
+              <widget class="QCheckBox" name="riverChech">
                <property name="text">
                 <string>River banks</string>
                </property>
@@ -380,7 +374,6 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;www.gfosservices.it&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.gfosservices.it/blog/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Additional development provided by:&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;M. Weier&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;North Dakota State Water Commission&lt;/p&gt;
@@ -399,12 +392,12 @@ p, li { white-space: pre-wrap; }
   <customwidget>
    <class>QgsFieldComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgsfieldcombobox.h</header>
+   <header>qgis.gui</header>
   </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgsmaplayercombobox.h</header>
+   <header>qgis.gui</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -541,7 +534,7 @@ p, li { white-space: pre-wrap; }
    <sender>flowlinesCheck</sender>
    <signal>clicked(bool)</signal>
    <receiver>flowComboQgs</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>80</x>
@@ -557,7 +550,7 @@ p, li { white-space: pre-wrap; }
    <sender>flowlinesCheck</sender>
    <signal>clicked(bool)</signal>
    <receiver>flowfieldsComboQgs</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -570,10 +563,10 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>riverChech</sender>
    <signal>clicked(bool)</signal>
    <receiver>banksComboQgs</receiver>
-   <slot>setShown(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>115</x>
@@ -586,10 +579,10 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>checkBox</sender>
+   <sender>riverChech</sender>
    <signal>clicked(bool)</signal>
    <receiver>bankfieldsComboQgs</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>99</x>

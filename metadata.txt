@@ -13,6 +13,7 @@ description=Qgis 2 RAS preprocessor
 version=0.4
 author=Pierluigi De Rosa
 email=pierluigi.derosa@gfosservices.it
+about= a plugin for input data preparing for RAS hydraulic software simulator.
 
 # End of mandatory metadata
 
